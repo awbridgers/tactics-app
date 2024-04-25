@@ -1,20 +1,272 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import * as ScreenOrientation from 'expo-screen-orientation';
+import gameStyle from './styles/game';
+import {PGNFormat, blankPGN} from './types/PGN';
+import {Chess, Color, Move, PieceSymbol, Square} from 'chess.js';
+import {PGNMove} from 'pgn-parser';
+import {convertCoords} from './helpers/convertCoords';
+import * as Linking from 'expo-linking';
+import {View, Text, Modal} from 'react-native';
+import Board from './components/board';
+import Controls from './components/controls';
+import Promote from './components/promote';
+import {tactics} from './tactics'
 
-export default function App() {
+
+
+const App = () => {
+  const chess = useRef(new Chess()).current;
+  const moveHistory = useRef<string>('');
+  const currentTactic = useRef<PGNFormat>(blankPGN);
+  const [selectedSquare, setSelectedSquare] = useState<Square | undefined>();
+  const [legalMoveSquares, setlegalMoveSquares] = useState<Map<Square, Move>>(
+    new Map()
+  );
+  const [playerColor, setPlayerColor] = useState<Color>('w');
+  const [moveResult, setMoveResults] = useState<'right' | 'wrong' | ''>('');
+  const [moveList, setMoveList] = useState<string[]>([]);
+  const [showingSolution, setShowingSolution] = useState<boolean>(false);
+  const [tacticActive, setTactiveActive] = useState<boolean>(false);
+  const [showPromo, setShowPromo] = useState<boolean>(false);
+  const playerMove = useRef<boolean>(false);
+  const solution = useRef<PGNMove[]>([]);
+  const promoInfo = useRef<Move | null>(null);
+  // const db = getDatabase();
+
+  const loadTactic = async () => {
+    //try to load a random tactic from the DB
+    const random = Math.floor(Math.random() * tactics.length); //NOTE: 4740 is CURRENT number of tactics in the DB
+    //console.log(random);
+    // const tacticRef = child(ref(db), `tacticsList/${random}`);
+    // const fetch = await get(tacticRef);
+    const tactic = tactics[random];
+    //start the game
+    chess.load(tactic.fen);
+    playerMove.current = true;
+    setShowingSolution(false);
+    solution.current = tactic.pgn;
+    currentTactic.current = tactic;
+    setPlayerColor(chess.turn());
+    setMoveList([]);
+    setlegalMoveSquares(new Map());
+    setSelectedSquare(undefined);
+    setMoveResults('');
+    setTactiveActive(true);
+  };
+  useEffect(() => {
+    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
+  }, []);
+  //load a tactic to start the game
+
+  useEffect(() => {
+    loadTactic();
+  }, []);
+
+  const clickSquare = (i: number, j: number) => {
+    if (playerMove.current && tacticActive) {
+      const coordinate = convertCoords(i, j) as Square;
+      if (!selectedSquare) {
+        //this is the first click
+        const pieceOnSquare = chess.get(coordinate);
+        //only target square if there is a player's piece on it
+        if (pieceOnSquare && pieceOnSquare.color === playerColor) {
+          setSelectedSquare(coordinate);
+          const legalMoveList: [Square, Move][] = chess
+            .moves({verbose: true, square: coordinate})
+            .map((x) => {
+              const {to} = x;
+              return [to, x];
+            });
+          setlegalMoveSquares(new Map(legalMoveList));
+        }
+      } else {
+        //it is the secondClick
+        if (legalMoveSquares.has(coordinate)) {
+          //LEGAL MOVE
+          const moveInfo = legalMoveSquares.get(coordinate);
+          if (moveInfo.promotion) {
+            setShowPromo(true);
+            promoInfo.current = moveInfo;
+          } else {
+            movePiece(selectedSquare, coordinate);
+          }
+        } else if (coordinate === selectedSquare) {
+          //NOT A LEGAL MOVE BUT
+          //click on the same piece
+          setSelectedSquare(undefined);
+          setlegalMoveSquares(new Map());
+        } else if (chess.get(coordinate).color === playerColor) {
+          //not a legal move
+          //its a click on other piece, switch to that piece
+          setSelectedSquare(coordinate);
+          const legalMoveList: [Square, Move][] = chess
+            .moves({verbose: true, square: coordinate})
+            .map((x) => {
+              const {to} = x;
+              return [to, x];
+            });
+          setlegalMoveSquares(new Map(legalMoveList));
+        } else {
+          //if it is a click on a random score, undo peice selection
+          setSelectedSquare(undefined);
+          setlegalMoveSquares(new Map());
+        }
+      }
+    }
+  };
+  const computerMove = () => {
+    setTimeout(() => {
+      const nextMove = solution.current[0];
+      chess.move(nextMove.move);
+      playerMove.current = true;
+      solution.current = solution.current.slice(1);
+      setMoveResults('');
+    }, 1000);
+  };
+  const showSolution = () => {
+    setShowingSolution(true);
+    setTactiveActive(false);
+    setTimeout(() => {
+      const nextMove = solution.current[0].move;
+      chess.move(nextMove);
+      setMoveList((prev) => [...prev, nextMove]);
+      if (solution.current.length > 1) {
+        solution.current = solution.current.slice(1);
+        showSolution();
+      } else {
+        setShowingSolution(false);
+      }
+    }, 1000);
+  };
+  const checkMove = (move: string) => {
+    const nextMove = solution.current[0];
+    if (nextMove.move.includes(move)) {
+      //this is the correct move!
+      moveHistory.current = chess.fen();
+      if (solution.current.length === 1) {
+        //this was the last move
+        setTactiveActive(false);
+        solution.current = [];
+      } else {
+        //there is more to the solution
+        solution.current = solution.current.slice(1);
+        computerMove();
+      }
+      setMoveResults('right');
+      setMoveList((prev) => [...prev, nextMove.move]);
+    } else {
+      //this move was wrong!
+
+      setTimeout(() => {
+        chess.load(moveHistory.current);
+        playerMove.current = true;
+        setMoveResults('wrong');
+      }, 500);
+    }
+  };
+  const movePiece = (
+    from: Square,
+    to: Square,
+    promo: Exclude<PieceSymbol, 'p'> = 'q'
+  ) => {
+    moveHistory.current = chess.fen();
+    setShowPromo(false)
+    const move = chess.move({to: to, from: from, promotion: promo});
+    setSelectedSquare(undefined);
+    setlegalMoveSquares(new Map());
+    setMoveResults('');
+    playerMove.current = false;
+    checkMove(move.san);
+  };
+
+  const analysis = () => {
+    Linking.openURL(
+      `https://lichess.org/analysis/${currentTactic.current.fen}`
+    );
+  };
+  const retry = () => {
+    playerMove.current = true;
+    solution.current = currentTactic.current.pgn;
+    chess.load(currentTactic.current.fen);
+    setTactiveActive(true);
+    setMoveResults('');
+    setMoveList([]);
+  };
+  const cancelPromo = ()=>{
+    setShowPromo(false);
+    setSelectedSquare(null);
+    setlegalMoveSquares(new Map())
+    promoInfo.current = null
+  }
+
   return (
-    <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <StatusBar style="auto" />
+    <View testID="app" style={gameStyle.container}>
+      <Modal visible={showPromo} animationType="slide" transparent>
+        <View
+          style={{
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            flex: 1,
+            justifyContent: 'center',
+          }}
+        >
+          <Promote
+            color={playerColor}
+            onPress={movePiece}
+            move = {promoInfo.current}
+            cancel={cancelPromo}
+          ></Promote>
+        </View>
+      </Modal>
+      <View style={{flex: 1, justifyContent: 'center', width: '100%'}}>
+        <Text style={gameStyle.toMove}>
+          {playerColor === 'w' ? 'White' : 'Black'} to move.
+        </Text>
+        {moveResult === 'wrong' && (
+          <Text style={gameStyle.incorrect}>Incorrect, keep trying!</Text>
+        )}
+        {moveResult === 'right' && (
+          <Text style={gameStyle.correct}>Great Job!</Text>
+        )}
+      </View>
+
+      <Board
+        currentBoard={chess.board()}
+        clickSquare={clickSquare}
+        selectedSquare={selectedSquare}
+        legalMoves={legalMoveSquares}
+        showPromo={showPromo}
+        color={playerColor}
+      />
+      <View
+        style={{
+          flex: 2,
+          justifyContent: 'space-around',
+          width: '100%',
+        }}
+      >
+        <View
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+          }}
+        >
+          <Text style={gameStyle.solution}>{moveList.join(' ')}</Text>
+        </View>
+        <View style={{flex: 3, marginBottom: 10}}>
+          <Controls
+            showingSolution={showingSolution}
+            tacticActive={tacticActive}
+            viewSolution={showSolution}
+            next={loadTactic}
+            analysis={analysis}
+            retry={retry}
+          />
+        </View>
+      </View>
     </View>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+export default App;
