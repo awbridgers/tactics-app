@@ -28,6 +28,7 @@ const App = () => {
   const [showingSolution, setShowingSolution] = useState<boolean>(false);
   const [tacticActive, setTactiveActive] = useState<boolean>(false);
   const [showPromo, setShowPromo] = useState<boolean>(false);
+  const [prevMove, setPrevMove] = useState<{from: Square, to: Square} | null>(null)
   const playerMove = useRef<boolean>(false);
   const solution = useRef<PGNMove[]>([]);
   const promoInfo = useRef<Move | null>(null);
@@ -52,6 +53,7 @@ const App = () => {
     setSelectedSquare(undefined);
     setMoveResults('');
     setTactiveActive(true);
+    setPrevMove(null)
   };
   useEffect(() => {
     ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
@@ -62,9 +64,9 @@ const App = () => {
     loadTactic();
   }, []);
 
-  const clickSquare = (i: number, j: number) => {
+  const clickSquare = (coordinate: Square) => {
     if (playerMove.current && tacticActive) {
-      const coordinate = convertCoords(i, j) as Square;
+
       if (!selectedSquare) {
         //this is the first click
         const pieceOnSquare = chess.get(coordinate);
@@ -117,10 +119,12 @@ const App = () => {
   const computerMove = () => {
     setTimeout(() => {
       const nextMove = solution.current[0];
-      chess.move(nextMove.move);
+      const {to, from} = chess.move(nextMove.move);
+
       playerMove.current = true;
       solution.current = solution.current.slice(1);
       setMoveResults('');
+      setPrevMove({to, from})
     }, 1000);
   };
   const showSolution = () => {
@@ -128,8 +132,9 @@ const App = () => {
     setTactiveActive(false);
     setTimeout(() => {
       const nextMove = solution.current[0].move;
-      chess.move(nextMove);
+      const move = chess.move(nextMove);
       setMoveList((prev) => [...prev, nextMove]);
+      setPrevMove({from: move.from, to: move.to})
       if (solution.current.length > 1) {
         solution.current = solution.current.slice(1);
         showSolution();
@@ -138,11 +143,12 @@ const App = () => {
       }
     }, 1000);
   };
-  const checkMove = (move: string) => {
+  const checkMove = (move: Move) => {
     const nextMove = solution.current[0];
-    if (nextMove.move.includes(move)) {
+    if (nextMove.move.includes(move.san)) {
       //this is the correct move!
       moveHistory.current = chess.fen();
+      setPrevMove({from: move.from, to: move.to})
       if (solution.current.length === 1) {
         //this was the last move
         setTactiveActive(false);
@@ -176,7 +182,8 @@ const App = () => {
     setlegalMoveSquares(new Map());
     setMoveResults('');
     playerMove.current = false;
-    checkMove(move.san);
+    checkMove(move);
+    
   };
 
   const analysis = () => {
@@ -191,6 +198,7 @@ const App = () => {
     setTactiveActive(true);
     setMoveResults('');
     setMoveList([]);
+    setPrevMove(null)
   };
   const cancelPromo = ()=>{
     setShowPromo(false);
@@ -234,8 +242,8 @@ const App = () => {
         clickSquare={clickSquare}
         selectedSquare={selectedSquare}
         legalMoves={legalMoveSquares}
-        showPromo={showPromo}
-        color={playerColor}
+        prevMove={prevMove}
+        playerColor = {playerColor}
       />
       <View
         style={{
