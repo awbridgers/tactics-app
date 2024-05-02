@@ -44,15 +44,27 @@ const Board = ({
   const [loading, setLoading] = useState<boolean>(true);
   const chess = useRef(new Chess()).current;
   const linePos = useMemo(() => {
-    if (!squareWidth || !prevMove) return {x1: 0, x2: 0, y1: 0, y2: 0};
+    let x1 = 0,
+      x2 = 0,
+      y1 = 0,
+      y2 = 0;
+    if (!squareWidth || !prevMove) return {x1, x2, y1, y2};
     const {to, from} = prevMove;
     const offset = squareWidth / 2;
-    const x1 = (from.charCodeAt(0) - 97) * squareWidth + offset;
-    const x2 = (to.charCodeAt(0) - 97) * squareWidth + offset;
-    const y1 = (8 - +from[1]) * squareWidth + offset;
-    const y2 = (8 - +to[1]) * squareWidth + offset;
-    return {x1, x2, y1, y2};
-  }, [prevMove, squareWidth]);
+    if (playerColor === 'w') {
+      x1 = (from.charCodeAt(0) - 97) * squareWidth + offset;
+      x2 = (to.charCodeAt(0) - 97) * squareWidth + offset;
+      y1 = (8 - +from[1]) * squareWidth + offset;
+      y2 = (8 - +to[1]) * squareWidth + offset;
+    }else{
+      x1 = (104 - from.charCodeAt(0))  * squareWidth + offset;
+      x2 = (104 -  to.charCodeAt(0))  * squareWidth + offset;
+      y1 = (+from[1] - 1)  * squareWidth + offset
+      y2 = (+to[1] - 1)  * squareWidth + offset
+    }
+      return {x1, x2, y1, y2};
+    
+  }, [prevMove, squareWidth, playerColor]);
 
   return (
     <View style={boardStyle.board}>
@@ -69,7 +81,10 @@ const Board = ({
             //}}
           >
             {row.map((square, j) => {
-              const id = `${String.fromCharCode(j + 97)}${8 - i}` as Square;
+              const id =
+                playerColor === 'w'
+                  ? (`${String.fromCharCode(j + 97)}${8 - i}` as Square)
+                  : (`${String.fromCharCode(104 - j)}${i + 1}` as Square);
 
               return (
                 <Pressable
@@ -147,8 +162,8 @@ const Board = ({
             d={`M ${linePos.x1} ${linePos.y1} L ${linePos.x2} ${linePos.y2}`}
             stroke={'red'}
             strokeWidth={4}
-            strokeLinecap='butt'
-            markerEnd='url(#arrow)'
+            strokeLinecap="butt"
+            markerEnd="url(#arrow)"
           />
           // <Line
           //   stroke={'red'}
@@ -199,12 +214,13 @@ const boardStyle = StyleSheet.create({
     right: 0,
     top: 0,
     bottom: 0,
-    borderWidth: 2,
-    borderColor: 'red',
+    borderWidth: 4,
+    borderColor: 'yellow',
   },
   image: {
-    height: '80%',
-    width: '80%',
+    resizeMode: 'center',
+    height: "90%",
+    width: '90%'
   },
   legalMoveSquare: {
     position: 'absolute',

@@ -8,36 +8,36 @@ export const chooseImage = (
   if (color === 'b') {
     switch (piece) {
       case 'k':
-        return require('../images/blackKing2.png');
+        return require('../images/blackKing.png');
       case 'q':
-        return require('../images/blackQueen2.png');
+        return require('../images/blackQueen.png');
       case 'b':
-        return require('../images/blackBishop2.png');
+        return require('../images/blackBishop.png');
       case 'n':
-        return require('../images/blackKnight2.png');
+        return require('../images/blackKnight.png');
       case 'r':
-        return require('../images/blackRook2.png');
+        return require('../images/blackRook.png');
       case 'p':
-        return require('../images/blackPawn2.png');
+        return require('../images/blackPawn.png');
       default:
-        return require('../images/blackPawn2.png');
+        return require('../images/blackPawn.png');
     }
   } else {
     switch (piece) {
       case 'k':
-        return require('../images/whiteKing2.png');
+        return require('../images/whiteKing.png');
       case 'q':
-        return require('../images/whiteQueen2.png');
+        return require('../images/whiteQueen.png');
       case 'b':
-        return require('../images/whiteBishop2.png');
+        return require('../images/whiteBishop.png');
       case 'n':
-        return require('../images/whiteKnight2.png');
+        return require('../images/whiteKnight.png');
       case 'r':
-        return require('../images/whiteRook2.png');
+        return require('../images/whiteRook.png');
       case 'p':
-        return require('../images/whitePawn2.png');
+        return require('../images/whitePawn.png');
       default:
-        return require('../images/blackPawn2.png');
+        return require('../images/blackPawn.png');
     }
   }
 };

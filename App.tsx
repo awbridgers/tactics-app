@@ -32,7 +32,7 @@ const App = () => {
   const playerMove = useRef<boolean>(false);
   const solution = useRef<PGNMove[]>([]);
   const promoInfo = useRef<Move | null>(null);
-  // const db = getDatabase();
+  const board = playerColor === 'w' ? chess.board() : chess.board().reverse().map(x=>x.reverse())
 
   const loadTactic = async () => {
     //try to load a random tactic from the DB
@@ -238,7 +238,7 @@ const App = () => {
       </View>
 
       <Board
-        currentBoard={chess.board()}
+        currentBoard={board}
         clickSquare={clickSquare}
         selectedSquare={selectedSquare}
         legalMoves={legalMoveSquares}
