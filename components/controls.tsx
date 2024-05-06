@@ -1,6 +1,5 @@
 import React from 'react';
-import {View, Text, TouchableOpacity} from 'react-native';
-import controlStyle from '../styles/controls';
+import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
 import {FontAwesome5} from '@expo/vector-icons';
 
 
@@ -48,3 +47,37 @@ const Controls = ({
     );
 
 export default Controls;
+
+const controlStyle = StyleSheet.create({
+  viewSolution: {
+    padding: 10,
+    backgroundColor: '#404040',
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: '#505050',
+    alignSelf: 'center',
+    alignItems: 'center'
+  },
+  end: {
+    flexDirection: 'row',
+    flex: 1,
+    justifyContent: 'space-around', 
+
+  },
+  endButton:{
+    padding: 10,
+    margin:10,
+    backgroundColor: '#404040',
+    borderRadius: 2,
+    borderWidth: 2,
+    borderColor: '#505050',
+    alignSelf: 'center',
+    alignItems: 'center',
+    height: '75%',
+    justifyContent: 'center',
+    flex:1,
+  },
+  redo:{
+    color: '#b3b3b3',
+  }
+})

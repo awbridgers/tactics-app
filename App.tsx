@@ -1,16 +1,16 @@
 import React, {useEffect, useRef, useState} from 'react';
 import * as ScreenOrientation from 'expo-screen-orientation';
-import gameStyle from './styles/game';
 import {PGNFormat, blankPGN} from './types/PGN';
 import {Chess, Color, Move, PieceSymbol, Square} from 'chess.js';
 import {PGNMove} from 'pgn-parser';
 import {convertCoords} from './helpers/convertCoords';
 import * as Linking from 'expo-linking';
-import {View, Text, Modal} from 'react-native';
+import {View, Text, Modal, useColorScheme, StyleSheet} from 'react-native';
 import Board from './components/board';
 import Controls from './components/controls';
 import Promote from './components/promote';
 import {tactics} from './tactics'
+import { StatusBar } from 'expo-status-bar';
 
 
 
@@ -209,6 +209,7 @@ const App = () => {
 
   return (
     <View testID="app" style={gameStyle.container}>
+      <StatusBar style = 'light' />
       <Modal visible={showPromo} animationType="slide" transparent>
         <View
           style={{
@@ -278,3 +279,39 @@ const App = () => {
 };
 
 export default App;
+
+const gameStyle = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: '#282828',
+  },
+  solution: {
+    fontSize: 20,
+    color: '#B3b3b3',
+  },
+  toMove: {
+    fontSize: 26,
+    color: '#b3b3b3',
+    textAlign: 'center',
+  },
+  incorrect: {
+    backgroundColor: 'red',
+    position: 'absolute',
+    bottom: 5,
+    left: 0,
+    right: 0,
+    fontSize:20,
+    textAlign: 'center'
+  },
+  correct:{
+    backgroundColor: 'green',
+    position: 'absolute',
+    bottom: 5,
+    left: 0,
+    right: 0,
+    fontSize:20,
+    textAlign: 'center'
+  }
+});
