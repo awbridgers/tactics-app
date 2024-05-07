@@ -94701,7 +94701,7 @@ export const tactics : PGNFormat[] = [
         ],
         "comments": []
       },
-      {"move_number": 2, "move": "fxe5N", "comments": []},
+      {"move_number": 2, "move": "fxe5", "comments": []},
       {"move": "d7", "comments": []},
       {"move_number": 3, "move": "Nd6", "comments": []},
       {

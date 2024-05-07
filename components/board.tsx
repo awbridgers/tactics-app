@@ -28,6 +28,7 @@ type Props = {
   legalMoves: Map<Square, Move>;
   prevMove: {from: Square; to: Square} | null;
   playerColor: Color;
+  hint: Square | null;
 };
 
 const Board = ({
@@ -37,6 +38,7 @@ const Board = ({
   legalMoves,
   prevMove,
   playerColor,
+  hint,
 }: Props) => {
   // const [rowY, setRowY] = useState<Map<number, number>>(new Map());
   // const [colX, setColX] = useState<Map<string, number>>(new Map());
@@ -56,30 +58,20 @@ const Board = ({
       x2 = (to.charCodeAt(0) - 97) * squareWidth + offset;
       y1 = (8 - +from[1]) * squareWidth + offset;
       y2 = (8 - +to[1]) * squareWidth + offset;
-    }else{
-      x1 = (104 - from.charCodeAt(0))  * squareWidth + offset;
-      x2 = (104 -  to.charCodeAt(0))  * squareWidth + offset;
-      y1 = (+from[1] - 1)  * squareWidth + offset
-      y2 = (+to[1] - 1)  * squareWidth + offset
+    } else {
+      x1 = (104 - from.charCodeAt(0)) * squareWidth + offset;
+      x2 = (104 - to.charCodeAt(0)) * squareWidth + offset;
+      y1 = (+from[1] - 1) * squareWidth + offset;
+      y2 = (+to[1] - 1) * squareWidth + offset;
     }
-      return {x1, x2, y1, y2};
-    
+    return {x1, x2, y1, y2};
   }, [prevMove, squareWidth, playerColor]);
 
   return (
     <View style={boardStyle.board}>
       {currentBoard.map((row, i) => {
         return (
-          <View
-            style={boardStyle.rank}
-            key={i}
-            // onLayout={(e) => {
-            // const row = 8-i
-            // if (rowY.has(row)) return;
-            // const {x, y} = e.nativeEvent.layout;
-            //setRowY((map) => new Map(map.set(row, y)));
-            //}}
-          >
+          <View style={boardStyle.rank} key={i}>
             {row.map((square, j) => {
               const id =
                 playerColor === 'w'
@@ -96,7 +88,6 @@ const Board = ({
                   onLayout={(e) => {
                     const {height, width} = e.nativeEvent.layout;
                     if (!squareWidth) setSquareWidth(width);
-                    // setColX((map) => new Map(map.set(id[0], x)));
                   }}
                 >
                   <View
@@ -107,28 +98,33 @@ const Board = ({
                     }
                     testID="square"
                   >
+                    {/* put the file label on the 1st rank  */}
                     {i === 7 && (
                       <View style={boardStyle.coordFile}>
                         <Text>{id[0]}</Text>
                       </View>
                     )}
+                    {/* put the rank label on the first file */}
                     {j === 0 && (
                       <View style={boardStyle.coordRank}>
                         <Text>{id[1]}</Text>
                       </View>
                     )}
-                    {selectedSquare === id && (
+                    {/* Put border around the selected square */}
+                    {(selectedSquare === id || hint === id) && (
                       <View
                         style={boardStyle.selectedSquare}
                         testID="selected"
                       ></View>
                     )}
+                    {/* Show the places the selected piece can move with a dot */}
                     {legalMoves.has(id) && (
                       <View
                         style={boardStyle.legalMoveSquare}
                         testID="legalMove"
                       ></View>
                     )}
+                    {/* Put a piece image on squares with a piece */}
                     {square && (
                       <Image
                         source={chooseImage(square.type, square.color)}
@@ -219,8 +215,8 @@ const boardStyle = StyleSheet.create({
   },
   image: {
     resizeMode: 'center',
-    height: "90%",
-    width: '90%'
+    height: '90%',
+    width: '90%',
   },
   legalMoveSquare: {
     position: 'absolute',
