@@ -10,6 +10,8 @@ interface iProps {
   next: () => void;
   analysis: ()=>void;
   retry: ()=>void;
+  hint: ()=>void;
+  active: boolean
 }
 
 const Controls = ({
@@ -18,11 +20,20 @@ const Controls = ({
   showingSolution,
   next,
   analysis,
-  retry
+  retry,
+  hint,
+  active
 }:iProps) => (
       tacticActive ? (<View>
         <TouchableOpacity
           style={controlStyle.viewSolution}
+          disabled = {!active}
+          onPress={hint}
+          testID = 'showSolution'
+        ><Text style={{fontSize: 24, color: '#B3b3b3'}}>Show Hint</Text></TouchableOpacity>
+        <TouchableOpacity
+          style={controlStyle.viewSolution}
+          disabled = {!active}
           onPress={viewSolution}
           testID = 'showSolution'
         >
@@ -51,12 +62,14 @@ export default Controls;
 const controlStyle = StyleSheet.create({
   viewSolution: {
     padding: 10,
+    margin: 5,
     backgroundColor: '#404040',
     borderRadius: 8,
     borderWidth: 2,
     borderColor: '#505050',
     alignSelf: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    width: 200
   },
   end: {
     flexDirection: 'row',
