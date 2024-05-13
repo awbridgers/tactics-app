@@ -142,11 +142,12 @@ const App = () => {
   const computerMove = () => {
     setButtonsActive(false);
     setTimeout(() => {
-      const {to, from} = chess.move(solution.current[0]);
+      const {to, from, san} = chess.move(solution.current[0]);
       playerMove.current = true;
       solution.current = solution.current.slice(1);
       setMoveResults('');
       setPrevMove({to, from});
+      setMoveList((prev) => [...prev, san]);
       setButtonsActive(true);
     }, 1000);
   };
