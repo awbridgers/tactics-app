@@ -80,6 +80,7 @@ const Board = ({
 
               return (
                 <Pressable
+                  accessibilityRole="button"
                   style={boardStyle.square}
                   onPress={(e) => clickSquare(id)}
                   key={j}
@@ -160,6 +161,7 @@ const Board = ({
             strokeWidth={4}
             strokeLinecap="butt"
             markerEnd="url(#arrow)"
+            testID = 'path'
           />
           // <Line
           //   stroke={'red'}

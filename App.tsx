@@ -45,7 +45,6 @@ const App = () => {
           .board()
           .reverse()
           .map((x) => x.reverse());
-
   const loadTactic = async () => {
     //try to load a random tactic from the DB
     const random = Math.floor(Math.random() * tactics.length); //NOTE: 4740 is CURRENT number of tactics in the DB
