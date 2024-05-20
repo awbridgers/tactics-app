@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1716230478374" clover="3.2.0">
-  <project timestamp="1716230478374" name="All files">
-    <metrics statements="234" coveredstatements="122" conditionals="84" coveredconditionals="49" methods="40" coveredmethods="15" elements="358" coveredelements="186" complexity="0" loc="234" ncloc="234" packages="4" files="17" classes="17"/>
+<coverage generated="1716234154325" clover="3.2.0">
+  <project timestamp="1716234154325" name="All files">
+    <metrics statements="234" coveredstatements="122" conditionals="84" coveredconditionals="50" methods="40" coveredmethods="15" elements="358" coveredelements="187" complexity="0" loc="234" ncloc="234" packages="4" files="17" classes="17"/>
     <package name="tactics-trainer-remake">
       <metrics statements="164" coveredstatements="59" conditionals="39" coveredconditionals="7" methods="27" coveredmethods="7"/>
       <file name="App.tsx" path="C:\Users\awbri\Desktop\Waste of Intelligence\React-Native\tactics-trainer-remake\App.tsx">
@@ -173,7 +173,7 @@
       </file>
     </package>
     <package name="tactics-trainer-remake.components">
-      <metrics statements="40" coveredstatements="35" conditionals="29" coveredconditionals="28" methods="12" coveredmethods="7"/>
+      <metrics statements="40" coveredstatements="35" conditionals="29" coveredconditionals="29" methods="12" coveredmethods="7"/>
       <file name="board.tsx" path="C:\Users\awbri\Desktop\Waste of Intelligence\React-Native\tactics-trainer-remake\components\board.tsx">
         <metrics statements="30" coveredstatements="30" conditionals="25" coveredconditionals="25" methods="6" coveredmethods="6"/>
         <line num="34" count="2" type="stmt"/>
@@ -208,10 +208,10 @@
         <line num="184" count="2" type="stmt"/>
       </file>
       <file name="controls.tsx" path="C:\Users\awbri\Desktop\Waste of Intelligence\React-Native\tactics-trainer-remake\components\controls.tsx">
-        <metrics statements="3" coveredstatements="3" conditionals="4" coveredconditionals="3" methods="1" coveredmethods="1"/>
-        <line num="17" count="1" type="stmt"/>
-        <line num="27" count="2" type="cond" truecount="2" falsecount="0"/>
-        <line num="62" count="1" type="stmt"/>
+        <metrics statements="3" coveredstatements="3" conditionals="4" coveredconditionals="4" methods="1" coveredmethods="1"/>
+        <line num="16" count="2" type="stmt"/>
+        <line num="26" count="8" type="cond" truecount="2" falsecount="0"/>
+        <line num="81" count="2" type="stmt"/>
       </file>
       <file name="promote.tsx" path="C:\Users\awbri\Desktop\Waste of Intelligence\React-Native\tactics-trainer-remake\components\promote.tsx">
         <metrics statements="7" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="5" coveredmethods="0"/>
