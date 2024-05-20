@@ -1,34 +1,34 @@
-import {PieceType} from 'chess.js'
-export const chooseImage = (piece: PieceType, color: 'w' | 'b'): string => {
+import {PieceSymbol} from 'chess.js'
+export const chooseImage = (piece: PieceSymbol, color: 'w' | 'b'): {uri: string} => {
   if (color === 'b') {
     switch (piece) {
       case 'k':
-        return 'blackKing2';
+        return {uri: 'blackKing2'};
       case 'q':
-        return 'blackQueen2';
+        return {uri: 'blackQueen2'};
       case 'b':
-        return 'blackBishop2';
+        return {uri: 'blackBishop2'};
       case 'n':
-        return 'blackKnight2';
+        return {uri: 'blackKnight2'};
       case 'r':
-        return 'blackRook2';
+        return {uri: 'blackRook2'};
       case 'p':
-        return 'blackPawn2';
+        return {uri: 'blackPawn2'};
     }
   } else {
     switch (piece) {
       case 'k':
-        return 'whiteKing2';
+        return {uri: 'whiteKing2'};
       case 'q':
-        return 'whiteQueen2';
+        return {uri: 'whiteQueen2'};
       case 'b':
-        return 'whiteBishop2';
+        return {uri: 'whiteBishop2'};
       case 'n':
-        return 'whiteKnight2';
+        return {uri: 'whiteKnight2'};
       case 'r':
-        return 'whiteRook2';
+        return {uri: 'whiteRook2'};
       case 'p':
-        return 'whitePawn2';
+        return {uri: 'whitePawn2'};
     }
   }
 };
