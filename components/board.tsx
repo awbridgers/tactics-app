@@ -17,7 +17,6 @@ import {
   StyleSheet,
 } from 'react-native';
 import {chooseImage} from '../helpers/chooseImage';
-import {convertCoords, deConvertCoords} from '../helpers/convertCoords';
 import Svg, {Defs, Line, Marker, Path} from 'react-native-svg';
 import {Chess} from 'chess.js';
 
