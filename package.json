@@ -10,6 +10,7 @@
     "build": "eas build --platform android --profile",
     "startDev": "npx expo start --dev-client",
     "test": "jest --watch",
+    "testOpen": "jest --detectOpenHandles",
     "coverage": "jest --coverage"
   },
   "dependencies": {

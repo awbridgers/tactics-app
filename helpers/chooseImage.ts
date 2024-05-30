@@ -19,8 +19,6 @@ export const chooseImage = (
         return require('../images/blackRook.png');
       case 'p':
         return require('../images/blackPawn.png');
-      default:
-        return require('../images/blackPawn.png');
     }
   } else {
     switch (piece) {
@@ -36,8 +34,6 @@ export const chooseImage = (
         return require('../images/whiteRook.png');
       case 'p':
         return require('../images/whitePawn.png');
-      default:
-        return require('../images/blackPawn.png');
     }
   }
 };

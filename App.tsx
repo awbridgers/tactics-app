@@ -1,19 +1,16 @@
 import React, {useEffect, useRef, useState} from 'react';
 import * as ScreenOrientation from 'expo-screen-orientation';
-import {PGNFormat, blankPGN} from './types/PGN';
 import {Chess, Color, Move, PieceSymbol, Square} from 'chess.js';
-import {PGNMove} from 'pgn-parser';
-import {convertCoords} from './helpers/convertCoords';
 import * as Linking from 'expo-linking';
-import {View, Text, Modal, useColorScheme, StyleSheet} from 'react-native';
+import {View, Text, Modal, StyleSheet} from 'react-native';
 import Board from './components/board';
 import Controls from './components/controls';
 import Promote from './components/promote';
 import {tactics} from './tactics';
 import {StatusBar} from 'expo-status-bar';
-import * as SplashScreen from 'expo-splash-screen';
 
-SplashScreen.preventAutoHideAsync();
+
+
 
 const App = () => {
   const chess = useRef(new Chess()).current;
@@ -27,14 +24,13 @@ const App = () => {
   const [moveResult, setMoveResults] = useState<'right' | 'wrong' | ''>('');
   const [moveList, setMoveList] = useState<string[]>([]);
   const [showingSolution, setShowingSolution] = useState<boolean>(false);
-  const [tacticActive, setTactiveActive] = useState<boolean>(false);
+  const [tacticActive, setTacticActive] = useState<boolean>(false);
   const [showPromo, setShowPromo] = useState<boolean>(false);
   const [prevMove, setPrevMove] = useState<{from: Square; to: Square} | null>(
     null
   );
   const [hint, setHint] = useState<Square | null>(null);
   const [buttonsActive, setButtonsActive] = useState<boolean>(true);
-  const [ready, setReady] = useState<boolean>(false)
   const playerMove = useRef<boolean>(false);
   const solution = useRef<Move[]>([]);
   const promoInfo = useRef<Move | null>(null);
@@ -45,7 +41,7 @@ const App = () => {
           .board()
           .reverse()
           .map((x) => x.reverse());
-  const loadTactic = async () => {
+  const loadTactic = () => {
     //try to load a random tactic from the DB
     const random = Math.floor(Math.random() * tactics.length); //NOTE: 4740 is CURRENT number of tactics in the DB
     const tactic = tactics[random];
@@ -65,22 +61,11 @@ const App = () => {
     setSelectedSquare(undefined);
     setMoveResults('');
     setHint(null);
-    setTactiveActive(true);
+    setTacticActive(true);
     setPrevMove(null);
     setButtonsActive(true);
   };
-  useEffect(() => {
-    ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT);
-  }, []);
-  //show the splash screen until the board is ready
-  useEffect(()=>{
-    const endSplash = async() =>{
-      await SplashScreen.hideAsync()
-    }
-    if(ready){
-      endSplash()
-    }
-  },[ready])
+
   //load a tactic to start the game
   useEffect(() => {
     loadTactic();
@@ -167,7 +152,7 @@ const App = () => {
       setlegalMoveSquares(new Map());
       if (solution.current.length === 1) {
         //this was the last move
-        setTactiveActive(false);
+        setTacticActive(false);
         solution.current = [];
       } else {
         //there is more to the solution
@@ -178,7 +163,7 @@ const App = () => {
   };
   const showSolution = () => {
     setShowingSolution(true);
-    setTactiveActive(false);
+    setTacticActive(false);
     setHint(null);
     setlegalMoveSquares(new Map());
     setSelectedSquare(null)
@@ -204,7 +189,7 @@ const App = () => {
       setHint(null);
       if (solution.current.length === 1) {
         //this was the last move
-        setTactiveActive(false);
+        setTacticActive(false);
         solution.current = [];
       } else {
         //there is more to the solution
@@ -247,7 +232,7 @@ const App = () => {
     playerMove.current = true;
     solution.current = currentTactic.current.solution;
     chess.load(currentTactic.current.fen);
-    setTactiveActive(true);
+    setTacticActive(true);
     setMoveResults('');
     setMoveList([]);
     setPrevMove(null);
@@ -261,9 +246,9 @@ const App = () => {
   };
 
   return (
-    <View testID="app" style={gameStyle.container} onLayout={()=>setReady(true)}>
+    <View testID="app" style={gameStyle.container}>
       <StatusBar style="light" />
-      <Modal visible={showPromo} animationType="slide" transparent>
+      <Modal testID='promotion' visible={showPromo} animationType="slide" transparent>
         <View
           style={{
             backgroundColor: 'rgba(0,0,0,0.5)',

@@ -1,5 +1,8 @@
-import {PieceSymbol} from 'chess.js'
-export const chooseImage = (piece: PieceSymbol, color: 'w' | 'b'): {uri: string} => {
+import {PieceSymbol} from 'chess.js';
+export const chooseImage = (
+  piece: PieceSymbol,
+  color: 'w' | 'b'
+): {uri: string} => {
   if (color === 'b') {
     switch (piece) {
       case 'k':
@@ -13,6 +16,8 @@ export const chooseImage = (piece: PieceSymbol, color: 'w' | 'b'): {uri: string}
       case 'r':
         return {uri: 'blackRook2'};
       case 'p':
+        return {uri: 'blackPawn2'};
+      default:
         return {uri: 'blackPawn2'};
     }
   } else {
@@ -29,6 +34,8 @@ export const chooseImage = (piece: PieceSymbol, color: 'w' | 'b'): {uri: string}
         return {uri: 'whiteRook2'};
       case 'p':
         return {uri: 'whitePawn2'};
+      default:
+        return {uri: 'whitePawn2'}
     }
   }
 };

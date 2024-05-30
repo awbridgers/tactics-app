@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import {View, Text, TouchableOpacity, StyleSheet, Pressable} from 'react-native';
 import {FontAwesome5} from '@expo/vector-icons';
 
 interface iProps {
@@ -25,24 +25,24 @@ const Controls = ({
 }: iProps) =>
   tacticActive ? (
     <View>
-      <TouchableOpacity
-        style={controlStyle.viewSolution}
+      <Pressable
+        style={({pressed})=>[controlStyle.viewSolution, {opacity: pressed ? 0.5: 1}]}
         accessibilityRole="button"
         disabled={!active}
         onPress={hint}
         testID="showHint"
       >
         <Text style={{fontSize: 24, color: '#B3b3b3'}}>Show Hint</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={controlStyle.viewSolution}
+      </Pressable>
+      <Pressable
+        style={({pressed})=>[controlStyle.viewSolution, {opacity: pressed ? 0.5: 1}]}
         accessibilityRole="button"
         disabled={!active}
         onPress={viewSolution}
         testID="showSolution"
       >
         <Text style={{fontSize: 24, color: '#B3b3b3'}}>View Solution</Text>
-      </TouchableOpacity>
+      </Pressable>
     </View>
   ) : !showingSolution ? (
     <View style={controlStyle.end}>
